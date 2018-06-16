@@ -256,8 +256,7 @@ class FullyConnectedNet(object):
           if index == 1:
             z, _ = affine_forward(X, w, b)
           else:
-            z, _ = affine_forward(hidden['a' + str(index)], w, b)
-          a, _ = relu_forward(z)
+            z, _ = affine_forward(hidden['a' + str(index - 1)], w, b)
           if self.use_dropout:
             ra, _ = relu_forward(z)
             a, cache = dropout_forward(ra, self.dropout_param)
@@ -299,24 +298,19 @@ class FullyConnectedNet(object):
           w = self.params['W' + str(index)]
           loss += 0.5 * self.reg * np.sum(w ** 2)
 
-        for index in range(self.num_layers, 0, -1):
-          if index == self.num_layers:
 
         ############################################################################
         #                             END OF YOUR CODE                             #
         ############################################################################
-        if self.use_dropout:
-          a = hidden['dp_a' + str(self.num_layers - 1)]
-        else:
-          a = hidden['a' + str(self.num_layers - 1)]
+        a = hidden['a' + str(self.num_layers - 1)]
         w = self.params['W' + str(self.num_layers)]
         b = self. params['b' + str(self.num_layers)]
         last_da, grads['W' + str(self.num_layers)], grads['b' + str(self.num_layers)] = affine_backward(dscores, (a, w, b))
         for index in range(self.num_layers - 1, 0, -1):
-          if self.use_dropout:
-            a = hidden['dp_a' + str(index - 1)]
+          if index == 1:
+            a = X
           else:
-            a = hidden['a' + str(index - 1)]
+            a  = hidden['a' + str(index - 1)]
           z = hidden['z' + str(index)]
           w = self.params['W' + str(index)]
           b = self. params['b' + str(index)]
